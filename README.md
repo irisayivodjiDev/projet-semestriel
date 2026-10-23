@@ -46,6 +46,19 @@ npm run dev
 
 > ⚠️ Docker doit être démarré **avant** le frontend. Le frontend consomme l'API sur `http://localhost:8079`.
 
+## Déploiement sur Render
+
+Le fichier [`render.yaml`](./render.yaml) configure le front public et l'API sur Render. L'API utilise PostgreSQL chez Neon, dont le plan gratuit convient à une démonstration personnelle.
+
+1. Créez une base PostgreSQL gratuite sur [Neon](https://neon.com/) et copiez sa chaîne de connexion (`DATABASE_URL`).
+2. Connectez le dépôt GitHub à [Render](https://render.com/), puis créez un Blueprint à partir de ce dépôt et de `render.yaml`.
+3. Lors de la création, fournissez la chaîne Neon comme `DATABASE_URL`. Le premier démarrage de l'API crée le schéma et les données de démonstration.
+4. Après le déploiement, vérifiez les URL Render générées. Si elles diffèrent des URL déclarées dans `render.yaml`, mettez à jour `VITE_API_URL` sur le site statique et `CORS_ORIGIN` sur l'API, puis redéployez le front.
+
+Les services gratuits peuvent se mettre en veille après une période d'inactivité. Le système de fichiers de l'API est éphémère : les fichiers média téléversés ne sont donc pas conservés durablement. Ne déployez pas de données sensibles ni de secrets dans ce projet de démonstration.
+
+Avant de partager le back-office publiquement, remplacez le mot de passe de démonstration `admin123` du compte `admin@cms.local`.
+
 ---
 
 ## Résolution de problèmes fréquents

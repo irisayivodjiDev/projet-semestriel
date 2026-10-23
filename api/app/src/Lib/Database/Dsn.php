@@ -11,6 +11,7 @@ class Dsn {
     private string $dbname;
     private int $port;
     private string $dsn;
+    private bool $requireSsl = false;
 
     public function __construct() {
         $config = self::getConfig();
@@ -18,10 +19,11 @@ class Dsn {
         if (!empty($_ENV['DATABASE_URL'])) {
             $url = parse_url($_ENV['DATABASE_URL']);
             $this->host     = $url['host'];
-            $this->user     = $url['user'];
-            $this->password = $url['pass'];
+            $this->user     = rawurldecode($url['user']);
+            $this->password = rawurldecode($url['pass']);
             $this->dbname   = ltrim($url['path'], '/');
             $this->port     = $url['port'] ?? 5432;
+            $this->requireSsl = true;
         } else {
             $this->host     = $_ENV['PGHOST']     ?? $_ENV['DB_HOST']     ?? $config['host'];
             $this->user     = $_ENV['PGUSER']     ?? $_ENV['DB_USER']     ?? $config['user'];
@@ -29,7 +31,7 @@ class Dsn {
             $this->dbname   = $_ENV['PGDATABASE'] ?? $_ENV['DB_NAME']     ?? $config['database'];
             $this->port     = (int)($_ENV['PGPORT'] ?? $_ENV['DB_PORT']   ?? $config['port']);
         }
-        $this->dsn = 'pgsql:';
+        $this->dsn = 'pgsql:' . ($this->requireSsl ? 'sslmode=require;' : '');
     }
 
     public function getUser(): string {

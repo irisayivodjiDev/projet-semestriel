@@ -1,0 +1,6 @@
+.env
+log/
+postgres/
+app/vendor/
+app/uploads/
+node_modules/

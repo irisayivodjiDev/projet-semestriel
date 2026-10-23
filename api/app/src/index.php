@@ -5,9 +5,18 @@ use App\Lib\Http\Router;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-// CORS : autoriser le frontend à accéder à l'API
-$corsOrigin = $_ENV['CORS_ORIGIN'] ?? 'http://localhost:5173';
+// CORS : autoriser les frontends locaux de développement
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+$defaultOrigin = $_ENV['CORS_ORIGIN'] ?? 'http://localhost:5173';
+
+if ($origin !== '' && preg_match('#^https?://(localhost|127\.0\.0\.1)(:\d+)?$#', $origin)) {
+    $corsOrigin = $origin;
+} else {
+    $corsOrigin = $defaultOrigin;
+}
+
 header('Access-Control-Allow-Origin: ' . $corsOrigin);
+header('Vary: Origin');
 header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
 header('Access-Control-Max-Age: 86400');

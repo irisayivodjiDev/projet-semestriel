@@ -1,24 +1,28 @@
 FROM php:8.4-apache
 
-# PHP
-RUN apt-get update -y && apt-get upgrade -y
-RUN apt-get install -y zlib1g-dev libwebp-dev libpng-dev && docker-php-ext-install gd
-RUN apt-get install libzip-dev -y && docker-php-ext-install zip
-RUN apt-get install -y libpq-dev && docker-php-ext-install pdo pdo_pgsql pgsql
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libpq-dev \
+        libzip-dev \
+        libpng-dev \
+        libwebp-dev \
+        zlib1g-dev \
+        postgresql-client \
+    && docker-php-ext-install pdo_pgsql pgsql zip gd \
+    && rm -rf /var/lib/apt/lists/*
 
-# Composer
-#COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 
-RUN curl -fsSL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh
-RUN bash nodesource_setup.sh
-RUN apt-get install -y nodejs
-
-# Apache
 RUN a2enmod rewrite
-RUN service apache2 restart
-
-# Copier la configuration PHP personnalisée
 COPY php.ini /usr/local/etc/php/conf.d/uploads.ini
+COPY app/ /var/www/html/
+COPY database/init/ /opt/database/init/
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
+WORKDIR /var/www/html
+RUN composer install --no-interaction --prefer-dist --no-progress --no-ansi \
+    && mkdir -p /var/www/html/uploads \
+    && chown -R www-data:www-data /var/www/html/uploads \
+    && chmod +x /usr/local/bin/docker-entrypoint.sh
+
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 EXPOSE 80

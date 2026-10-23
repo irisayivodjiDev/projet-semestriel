@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: devflow-cms-api-ayivo
+    runtime: docker
+    plan: free
+    region: frankfurt
+    rootDir: api
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/v1/articles
+    envVars:
+      - key: PORT
+        value: "80"
+      - key: DATABASE_URL
+        sync: false
+      - key: CORS_ORIGIN
+        value: https://devflow-cms-front-ayivo.onrender.com
+
+  - type: web
+    name: devflow-cms-front-ayivo
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://devflow-cms-api-ayivo.onrender.com
