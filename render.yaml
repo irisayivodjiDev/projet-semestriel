@@ -4,9 +4,8 @@ services:
     runtime: docker
     plan: free
     region: frankfurt
-    rootDir: api
-    dockerfilePath: ./Dockerfile
-    dockerContext: .
+    dockerfilePath: api/Dockerfile
+    dockerContext: api
     healthCheckPath: /api/v1/articles
     envVars:
       - key: PORT
