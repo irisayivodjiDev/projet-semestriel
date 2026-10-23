@@ -1,0 +1,11 @@
+.git
+.github
+.vscode
+node_modules
+frontend/node_modules
+frontend/dist
+api/.env
+api/log
+api/postgres
+api/app/vendor
+api/app/uploads
