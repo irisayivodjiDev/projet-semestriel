@@ -15,6 +15,7 @@ COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 RUN a2enmod rewrite
 COPY api/php.ini /usr/local/etc/php/conf.d/uploads.ini
 COPY api/app/ /var/www/html/
+COPY api/dist/ /var/www/html/dist/
 COPY api/database/init/ /opt/database/init/
 COPY api/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
